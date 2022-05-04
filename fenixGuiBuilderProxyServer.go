@@ -39,6 +39,9 @@ func fenixGuiTestCaseBuilderServerMain() {
 	// Clean up when leaving. Is placed after logger because shutdown logs information
 	defer cleanup()
 
+	// Start RestApi-server
+	go restAPIServer()
+
 	// Start Backend gRPC-server
 	fenixGuiBuilderProxyServerObject.InitGrpcServer()
 

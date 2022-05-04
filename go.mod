@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/jlambert68/FenixGrpcApi v0.0.0-20220502122135-b2cb3b636f6a
 	google.golang.org/protobuf v1.28.0

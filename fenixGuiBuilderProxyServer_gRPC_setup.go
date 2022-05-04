@@ -20,10 +20,10 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	}).Info("Backend Server tries to start")
 
 	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-		"Id":                                 "ca3593b1-466b-4536-be91-5e038de178f4",
-		"common_config.FenixGuiServerPort: ": common_config.FenixGuiServerPort,
+		"Id": "ca3593b1-466b-4536-be91-5e038de178f4",
+		"common_config.FenixGuiBuilderProxyServerPort: ": common_config.FenixGuiBuilderProxyServerPort,
 	}).Info("Start listening on:")
-	lis, err = net.Listen("tcp", ":"+strconv.Itoa(common_config.FenixGuiServerPort))
+	lis, err = net.Listen("tcp", ":"+strconv.Itoa(common_config.FenixGuiBuilderProxyServerPort))
 
 	if err != nil {
 		fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
@@ -32,8 +32,8 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 		}).Error("failed to listen:")
 	} else {
 		fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-			"Id":                                 "ba070b9b-5d57-4c0a-ab4c-a76247a50fd3",
-			"common_config.FenixGuiServerPort: ": common_config.FenixGuiServerPort,
+			"Id": "ba070b9b-5d57-4c0a-ab4c-a76247a50fd3",
+			"common_config.FenixGuiBuilderProxyServerPort: ": common_config.FenixGuiBuilderProxyServerPort,
 		}).Info("Success in listening on port:")
 
 	}
@@ -51,9 +51,9 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	//reflection.Register(registerfenixGuiBuilderProxyServerServer)
 
 	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-		"Id":                                 "e843ece9-b707-4c60-b1d8-14464305e68f",
-		"common_config.FenixGuiServerPort: ": common_config.FenixGuiServerPort,
-	}).Info("registerfenixGuiBuilderProxyServerServer for TestInstruction Backend Server started")
+		"Id": "e843ece9-b707-4c60-b1d8-14464305e68f",
+		"common_config.FenixGuiBuilderProxyServerPort: ": common_config.FenixGuiBuilderProxyServerPort,
+	}).Info("'RegisterFenixTestCaseBuilderServerGrpcServicesServer' for FenixGuiBuilderProxyServer")
 	registerfenixGuiBuilderProxyServerServer.Serve(lis)
 	//}()
 
@@ -62,11 +62,11 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 // StopGrpcServer - Stop Backend gRPC-server
 func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) StopGrpcServer() {
 
-	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{}).Info("Gracefull stop for: registerTaxiHardwareStreamServer")
+	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{}).Info("Gracefully stop for: 'registerfenixGuiBuilderProxyServerServer'")
 	registerfenixGuiBuilderProxyServerServer.GracefulStop()
 
 	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-		"common_config.FenixGuiServerPort: ": common_config.FenixGuiServerPort,
+		"common_config.FenixGuiBuilderProxyServerPort: ": common_config.FenixGuiBuilderProxyServerPort,
 	}).Info("Close net.Listing")
 	_ = lis.Close()
 

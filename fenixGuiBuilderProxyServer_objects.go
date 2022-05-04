@@ -51,3 +51,12 @@ type ecServer struct {
 
 
 */
+
+var (
+	// Standard gRPC Clientr
+	remoteFenixGuiBuilderServerConnection *grpc.ClientConn
+	//gRpcClientForFenixGuiBuilderServer fenixTestDataSyncServerGrpcApi.FenixTestDataGrpcServicesClient
+	fenixGuiBuilderServerAddressToDial string
+
+	fenixGuiBuilderServerGrpcClient fenixGuiTestCaseBuilderServerGrpcApi.FenixTestCaseBuilderServerGrpcServicesClient
+)

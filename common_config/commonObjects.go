@@ -4,11 +4,11 @@ package common_config
 // The following variables receives their values from environment variables
 
 // Where is the client running
-var ExecutionLocationForClient ExecutionLocationTypeType
+var ExecutionLocation ExecutionLocationTypeType
 
 // Where is the Fenix TestDataSync server running
 // LocationForFenixTestDataServer
-var ExecutionLocationForFenixTestDataServer ExecutionLocationTypeType
+var ExecutionLocationForFenixGuiServer ExecutionLocationTypeType
 
 // Definitions for where client and Fenix Server is running
 type ExecutionLocationTypeType int
@@ -29,10 +29,10 @@ var LocationForFenixGuiBuilderProxyServerTypeMapping = map[ExecutionLocationType
 
 // Address to Fenix TestData Server & Client, will have their values from Environment variables at startup
 var (
-	FenixTestDataSyncServerAddress string // TODO remove, but is referenced by code that is not removed yet
-	FenixTestDataSyncServerPort    int    // TODO remove,
-	FenixGuiServerAddress          string
-	FenixGuiServerPort             int
+	FenixGuiBuilderServerAddress      string //
+	FenixGuiBuilderServerPort         int    // TODO remove,
+	FenixGuiBuilderProxyServerAddress string
+	FenixGuiBuilderProxyServerPort    int
 )
 
 // ***********************************************************************************************************

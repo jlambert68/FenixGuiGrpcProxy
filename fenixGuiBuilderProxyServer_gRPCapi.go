@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // AreYouAlive - *********************************************************************
@@ -103,6 +105,16 @@ func (s *FenixGuiTestCaseBuilderGrpcServicesServer) GetTestInstructionsAndTestCo
 			ErrorCodes: nil,
 		},
 	}
+
+	m := protojson.MarshalOptions{
+		EmitUnpopulated: true,
+		UseProtoNames:   true,
+		Multiline:       true,
+		Indent:          "  ",
+	}
+	jsonBytes, err := m.Marshal(responseMessage)
+
+	fmt.Println(string(jsonBytes))
 
 	return responseMessage, nil
 }
