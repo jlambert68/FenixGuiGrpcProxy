@@ -51,12 +51,12 @@ func init() {
 	}
 
 	// Address to GuiBuilderProxyServer
-	common_config.FenixGuiServerAddress = mustGetenv("FenixGuiBuilderProxyProxyServerAddress")
+	common_config.FenixGuiServerAddress = mustGetenv("FenixGuiBuilderProxyServerAddress")
 
 	// Port for GuiBuilderProxyServer
-	common_config.FenixGuiServerPort, err = strconv.Atoi(mustGetenv("FenixGuiBuilderProxyProxyServerPort"))
+	common_config.FenixGuiServerPort, err = strconv.Atoi(mustGetenv("FenixGuiBuilderProxyServerPort"))
 	if err != nil {
-		fmt.Println("Couldn't convert environment variable 'FenixGuiBuilderProxyProxyServerPort' to an integer, error: ", err)
+		fmt.Println("Couldn't convert environment variable 'FenixGuiBuilderProxyServerPort' to an integer, error: ", err)
 		os.Exit(0)
 
 	}
