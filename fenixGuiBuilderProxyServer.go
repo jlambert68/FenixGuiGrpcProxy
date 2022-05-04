@@ -40,7 +40,7 @@ func fenixGuiTestCaseBuilderServerMain() {
 	defer cleanup()
 
 	// Start RestApi-server
-	go restAPIServer()
+	go fenixGuiBuilderProxyServerObject.restAPIServer()
 
 	// Start Backend gRPC-server
 	fenixGuiBuilderProxyServerObject.InitGrpcServer()
