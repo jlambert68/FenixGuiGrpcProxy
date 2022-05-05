@@ -20,6 +20,7 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	router.HandleFunc("/health-check", fenixGuiBuilderProxyServerObject.HealthCheck).Methods("GET")
 	router.HandleFunc("/are-guibuilderserver-alive", fenixGuiBuilderProxyServerObject.RestSendAreYouAliveToFenixGuiBuilderServer).Methods("GET")
 	router.HandleFunc("/testinstructions-and-testinstructioncontainers/{userid}", fenixGuiBuilderProxyServerObject.RestSendGetInstructionsAndTestInstructionContainersToFenixGuiBuilderServer).Methods("GET")
+	router.HandleFunc("/pinned-testinstructions-and-testinstructioncontainers/{userid}", fenixGuiBuilderProxyServerObject.RestSendGetPinnedInstructionsAndTestInstructionContainersToFenixGuiBuilderServer).Methods("GET")
 
 	http.Handle("/", router)
 
@@ -104,7 +105,52 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	}
 
 	// Do gRPC-call
-	response = fenixGuiBuilderProxyServerObject.SendAGetTestInstructionsAndTestContainers(userId)
+	response = fenixGuiBuilderProxyServerObject.SendGetTestInstructionsAndTestContainers(userId)
+
+	// Create Header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Convert gRPC-response into json
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		// if error then just exit TODO Create correct response message
+		fmt.Fprintf(w, err.Error())
+
+		return
+	}
+
+	// Create Response message
+	w.Write(jsonResponse)
+}
+
+func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) RestSendGetPinnedInstructionsAndTestInstructionContainersToFenixGuiBuilderServer(w http.ResponseWriter, r *http.Request) {
+	// curl --request GET localhost:8080/pinned-testinstructions-and-testinstructioncontainers/s41797
+
+	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
+		"id": "2472dda1-701d-4b23-8326-757e43df4af4",
+	}).Debug("Incoming 'RestApi - /pinned-testinstructions-and-testinstructioncontainers'")
+
+	defer fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
+		"id": "db318ff4-ad36-43d4-a8d4-3e0ac4ff08c6",
+	}).Debug("Outgoing 'RestApi - /pinned-testinstructions-and-testinstructioncontainers'")
+
+	// gRPC -response
+	var response *fenixGuiTestCaseBuilderServerGrpcApi.TestInstructionsAndTestContainersMessage
+
+	// Extract UserId
+	parameters := mux.Vars(r)
+	userId, exit := parameters["userid"]
+
+	// If parameter UserID is missing then return error message
+	if exit == false {
+		fmt.Fprintf(w, "Missing UserId")
+
+		return
+	}
+
+	// Do gRPC-call
+	response = fenixGuiBuilderProxyServerObject.SendGetPinnedTestInstructionsAndTestContainers(userId)
 
 	// Create Header
 	w.Header().Set("Content-Type", "application/json")
