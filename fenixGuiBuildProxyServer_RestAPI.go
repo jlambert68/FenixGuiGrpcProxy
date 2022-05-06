@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
 	fenixGuiTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"log"
@@ -21,6 +22,7 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	router.HandleFunc("/are-guibuilderserver-alive", fenixGuiBuilderProxyServerObject.RestSendAreYouAliveToFenixGuiBuilderServer).Methods("GET")
 	router.HandleFunc("/testinstructions-and-testinstructioncontainers/{userid}", fenixGuiBuilderProxyServerObject.RestSendGetInstructionsAndTestInstructionContainersToFenixGuiBuilderServer).Methods("GET")
 	router.HandleFunc("/pinned-testinstructions-and-testinstructioncontainers/{userid}", fenixGuiBuilderProxyServerObject.RestSendGetPinnedInstructionsAndTestInstructionContainersToFenixGuiBuilderServer).Methods("GET")
+	router.HandleFunc("/pinned-testinstructions-and-testinstructioncontainers/{userid}{pinnedTestInstructionsAndTestInstructionsContainers}", fenixGuiBuilderProxyServerObject.RestSendSavePinnedInstructionsAndTestInstructionContainersToFenixGuiBuilderServer).Methods("POST")
 
 	http.Handle("/", router)
 
@@ -148,6 +150,65 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 
 		return
 	}
+
+	// Do gRPC-call
+	response = fenixGuiBuilderProxyServerObject.SendGetPinnedTestInstructionsAndTestContainers(userId)
+
+	// Create Header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Convert gRPC-response into json
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		// if error then just exit TODO Create correct response message
+		fmt.Fprintf(w, err.Error())
+
+		return
+	}
+
+	// Create Response message
+	w.Write(jsonResponse)
+}
+
+func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) RestSendSavePinnedInstructionsAndTestInstructionContainersToFenixGuiBuilderServer(w http.ResponseWriter, r *http.Request) {
+	// curl --request POST localhost:8080/pinned-testinstructions-and-testinstructioncontainers/s41797
+
+	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
+		"id": "2472dda1-701d-4b23-8326-757e43df4af4",
+	}).Debug("Incoming 'RestApi - (POST) /pinned-testinstructions-and-testinstructioncontainers'")
+
+	defer fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
+		"id": "db318ff4-ad36-43d4-a8d4-3e0ac4ff08c6",
+	}).Debug("Outgoing 'RestApi - (POST) /pinned-testinstructions-and-testinstructioncontainers'")
+
+	// gRPC -response
+	var response *fenixGuiTestCaseBuilderServerGrpcApi.TestInstructionsAndTestContainersMessage
+
+	// Extract UserId
+	parameters := mux.Vars(r)
+	userId, exit := parameters["userid"]
+
+	// If parameter UserID is missing then return error message
+	if exit == false {
+		fmt.Fprintf(w, "Missing UserId")
+
+		return
+	}
+
+	// Cast pinned TestInstructions and TestInstructionContainer - json into struct
+	pinnedTestInstructionsAndTestContainersMessage := fenixGuiTestCaseBuilderServerGrpcApi.PinnedTestInstructionsAndTestContainersMessage{}
+	err := jsonpb.Unmarshal(r.Body, &pinnedTestInstructionsAndTestContainersMessage)
+
+	// If casting json into proto-struct didn't succeed then return  error message
+	if exit == false {
+		fmt.Fprintf(w, "Couldn't convert json due not correct format. ")
+
+		return
+	}
+
+	// Set the user in the message
+	pinnedTestInstructionsAndTestContainersMessage.UserId = userId
 
 	// Do gRPC-call
 	response = fenixGuiBuilderProxyServerObject.SendGetPinnedTestInstructionsAndTestContainers(userId)

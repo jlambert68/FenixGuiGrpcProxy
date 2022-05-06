@@ -10,7 +10,7 @@ import (
 )
 
 // Prepare to Save Pinned TestInstructions and TestInstructionContainers to CloudDB
-func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) prepareSaveMerkleHashMerkleTreeAndTestDataRowsToCloudDB(pinnedTestInstructionsAndTestContainersMessage *fenixTestCaseBuilderServerGrpcApi.PinnedTestInstructionsAndTestContainersMessage) (returnMessage *fenixTestCaseBuilderServerGrpcApi.AckNackResponse) {
+func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) prepareSavePinnedTestInstructionsAndTestContainersToCloudDB(pinnedTestInstructionsAndTestContainersMessage *fenixTestCaseBuilderServerGrpcApi.PinnedTestInstructionsAndTestContainersMessage) (returnMessage *fenixTestCaseBuilderServerGrpcApi.AckNackResponse) {
 
 	// Begin SQL Transaction
 	txn, err := fenixSyncShared.DbPool.Begin(context.Background())
