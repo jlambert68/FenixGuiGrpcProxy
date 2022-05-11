@@ -284,7 +284,7 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 }
 
 // SendSavePinnedTestInstructionsAndTestContainers - Save pinned TestInstructions and TestInstructionContainers
-func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) SendSavePinnedTestInstructionsAndTestContainers(pinnedTestInstructionsAndTestContainersMessage *fenixGuiTestCaseBuilderServerGrpcApi.PinnedTestInstructionsAndTestContainersMessage) (returnMessage *fenixGuiTestCaseBuilderServerGrpcApi.TestInstructionsAndTestContainersMessage) {
+func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) SendSavePinnedTestInstructionsAndTestContainers(pinnedTestInstructionsAndTestContainersMessage *fenixGuiTestCaseBuilderServerGrpcApi.PinnedTestInstructionsAndTestContainersMessage) (returnMessage *fenixGuiTestCaseBuilderServerGrpcApi.AckNackResponse) {
 
 	var ctx context.Context
 	var returnMessageAckNack bool
@@ -294,20 +294,13 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	// Set up connection to Server
 	fenixGuiBuilderProxyServerObject.SetConnectionToFenixGuiBuilderServer()
 
-	// Create the request message
-	userIdentificationMessage := &fenixGuiTestCaseBuilderServerGrpcApi.UserIdentificationMessage{
-		UserId: pinnedTestInstructionsAndTestContainersMessage.UserId,
-		ProtoFileVersionUsedByClient: fenixGuiTestCaseBuilderServerGrpcApi.CurrentFenixTestCaseBuilderProtoFileVersionEnum(
-			fenixGuiBuilderProxyServerObject.getHighestFenixTestDataProtoFileVersion()),
-	}
-
 	// Do gRPC-call
 	//ctx := context.Background()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer func() {
 		//TODO Fixa så att denna inte görs som allt går bra
 		fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-			"ID": "c5ba19bd-75ff-4366-818d-745d4d7f1a52",
+			"ID": "2d688330-025f-492a-b318-bb9374bf76ec",
 		}).Error("Running Defer Cancel function")
 		cancel()
 	}()
@@ -319,16 +312,10 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 		ctx, returnMessageAckNack, returnMessageString = fenixGuiBuilderProxyServerObject.generateGCPAccessToken(ctx)
 		if returnMessageAckNack == false {
 			// When error
-			ackNackResponse := &fenixGuiTestCaseBuilderServerGrpcApi.AckNackResponse{
+			returnMessage = &fenixGuiTestCaseBuilderServerGrpcApi.AckNackResponse{
 				AckNack:    false,
 				Comments:   returnMessageString,
 				ErrorCodes: nil,
-			}
-
-			returnMessage = &fenixGuiTestCaseBuilderServerGrpcApi.TestInstructionsAndTestContainersMessage{
-				TestInstructionMessages:          nil,
-				TestInstructionContainerMessages: nil,
-				AckNackResponse:                  ackNackResponse,
 			}
 
 			return returnMessage
@@ -337,21 +324,21 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 	}
 
 	// Do the gRPC-call
-	returnMessage, err = fenixGuiBuilderServerGrpcClient.GetPinnedTestInstructionsAndTestContainers(ctx, userIdentificationMessage)
+	returnMessage, err = fenixGuiBuilderServerGrpcClient.SavePinnedTestInstructionsAndTestContainers(ctx, pinnedTestInstructionsAndTestContainersMessage)
 
 	// Shouldn't happen
 	if err != nil {
 		fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-			"ID":    "7bff3257-a193-4d07-83aa-f106f6f734a0",
+			"ID":    "b0743d37-cdda-425d-b391-74fb0ab0890e",
 			"error": err,
-		}).Error("Problem to do gRPC-call to FenixTestGuiBuilderServer for 'SendGetPinnedTestInstructionsAndTestContainers'")
+		}).Error("Problem to do gRPC-call to FenixTestGuiBuilderServer for 'SendSavePinnedTestInstructionsAndTestContainers'")
 
-	} else if returnMessage.AckNackResponse.AckNack == false {
+	} else if returnMessage.AckNack == false {
 		// FenixTestGuiBuilderServer couldn't handle gPRC call
 		fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
-			"ID":                                     "72f79764-2549-4ce7-867e-16cd0f414dff",
-			"Message from FenixTestGuiBuilderServer": returnMessage.AckNackResponse.Comments,
-		}).Error("Problem to do gRPC-call to FenixTestGuiBuilderServer for 'SendGetPinnedTestInstructionsAndTestContainers'")
+			"ID":                                     "7aa6164b-9a51-47fb-8279-f4be52ebab3d",
+			"Message from FenixTestGuiBuilderServer": returnMessage.Comments,
+		}).Error("Problem to do gRPC-call to FenixTestGuiBuilderServer for 'SendSavePinnedTestInstructionsAndTestContainers'")
 	}
 
 	return returnMessage

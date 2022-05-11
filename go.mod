@@ -13,6 +13,8 @@ require (
 )
 
 require (
+	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f
+	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/jlambert68/FenixGrpcApi v0.0.0-20220502122135-b2cb3b636f6a
@@ -22,7 +24,6 @@ require (
 require (
 	cloud.google.com/go/compute v1.6.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.11.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
