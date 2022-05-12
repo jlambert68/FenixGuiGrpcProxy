@@ -1,7 +1,6 @@
 package main
 
 import (
-	"FenixGuiGrpcProxyServer/common_config"
 	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
@@ -19,7 +18,39 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 		// Create an identity token.
 		// With a global TokenSource tokens would be reused and auto-refreshed at need.
 		// A given TokenSource is specific to the audience.
-		tokenSource, err := idtoken.NewTokenSource(ctx, "https://"+common_config.FenixGuiBuilderServerAddress)
+		/*
+			tokenSource, err := idtoken.NewTokenSource(ctx, "https://"+common_config.FenixGuiBuilderServerAddress)
+			if err != nil {
+				fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
+					"ID":  "8ba622d8-b4cd-46c7-9f81-d9ade2568eca",
+					"err": err,
+				}).Error("Couldn't generate access token")
+
+				return nil, false, "Couldn't generate access token"
+			}
+
+			token, err := tokenSource.Token()
+		*/
+		/*
+			var eMailAndPrivateKey = struct {
+				Email      string `json:"client_email"`
+				PrivateKey string `json:"private_key"`
+			}{}
+			json.Unmarshal(serviceAccountKeyJson, &eMailAndPrivateKey)
+			config := &jwt.Config{
+				Email:      eMailAndPrivateKey.Email,
+				PrivateKey: []byte(eMailAndPrivateKey.PrivateKey),
+				Scopes: []string{
+					gcp_scope,
+				},
+				TokenURL:   google.JWTTokenURL,
+				UseIDToken: false,
+			}
+
+		*/
+
+		tokenSource, err := idtoken.NewTokenSource(ctx, gcp_scope, idtoken.WithCredentialsJSON(serviceAccountKeyJson))
+
 		if err != nil {
 			fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
 				"ID":  "8ba622d8-b4cd-46c7-9f81-d9ade2568eca",
@@ -30,6 +61,8 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 		}
 
 		token, err := tokenSource.Token()
+		//token, err := config.TokenSource(oauth2.NoContext).Token()
+
 		if err != nil {
 			fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
 				"ID":  "0cf31da5-9e6b-41bc-96f1-6b78fb446194",
@@ -40,7 +73,7 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 		} else {
 			fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
 				"ID":    "8b1ca089-0797-4ee6-bf9d-f9b06f606ae9",
-				"token": token,
+				"token": "Nothing to see", //token,
 			}).Debug("Got Bearer Token")
 		}
 
@@ -50,7 +83,7 @@ func (fenixGuiBuilderProxyServerObject *fenixGuiBuilderProxyServerObjectStruct) 
 
 	fenixGuiBuilderProxyServerObject.logger.WithFields(logrus.Fields{
 		"ID": "cd124ca3-87bb-431b-9e7f-e044c52b4960",
-		"fenixGuiBuilderProxyServerObject.gcpAccessToken": fenixGuiBuilderProxyServerObject.gcpAccessToken,
+		"fenixGuiBuilderProxyServerObject.gcpAccessToken": "Nothing to see", //fenixGuiBuilderProxyServerObject.gcpAccessToken,
 	}).Debug("Will use Bearer Token")
 
 	// Add token to gRPC Request.
