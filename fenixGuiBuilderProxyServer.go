@@ -1,8 +1,10 @@
 package main
 
 import (
-	fenixSyncShared "github.com/jlambert68/FenixSyncShared"
 	"github.com/sirupsen/logrus"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 // Used for only process cleanup once
@@ -28,13 +30,28 @@ func cleanup() {
 func fenixGuiTestCaseBuilderServerMain() {
 
 	// Connect to CloudDB
-	fenixSyncShared.ConnectToDB()
+	//fenixSyncShared.ConnectToDB()
 
 	// Set up BackendObject
-	fenixGuiBuilderProxyServerObject = &fenixGuiBuilderProxyServerObjectStruct{}
+	fenixGuiBuilderProxyServerObject = &fenixGuiBuilderProxyServerObjectStruct{runAsTrayApplication: tempRunAsTrayApplication}
 
 	// Init logger
-	fenixGuiBuilderProxyServerObject.InitLogger("")
+	// When application is run as tray application then use text file as log
+	var filePathName = ""
+	var err error
+
+	if fenixGuiBuilderProxyServerObject.runAsTrayApplication == true {
+		// Get path for this application
+
+		logfilename := "mylog.log"
+		filePathName, err = filepath.Abs(logfilename)
+		if err != nil {
+			log.Println("Couldn't generate filePathName for log: ", err)
+			os.Exit(0)
+		}
+	}
+
+	fenixGuiBuilderProxyServerObject.InitLogger(filePathName)
 
 	// Clean up when leaving. Is placed after logger because shutdown logs information
 	defer cleanup()

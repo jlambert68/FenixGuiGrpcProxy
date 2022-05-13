@@ -2,13 +2,22 @@ package main
 
 import (
 	"FenixGuiGrpcProxyServer/common_config"
+	_ "embed"
 	"strconv"
 
 	//"flag"
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/getlantern/systray"
+	"github.com/getlantern/systray/example/icon"
 )
+
+// Embedded resources into the binary
+// The icon used
+//go:embed resources/fenix_icon.png
+var embededfenixIcon []byte
 
 // mustGetEnv is a helper function for getting environment variables.
 // Displays a warning if the environment variable is not set.
@@ -22,6 +31,12 @@ func mustGetenv(k string) string {
 
 func main() {
 	//time.Sleep(15 * time.Second)
+
+	// Start up application as SysTray if environment variable says that
+	if tempRunAsTrayApplication == true {
+		systray.Run(onReady, onExit)
+	}
+
 	fenixGuiTestCaseBuilderServerMain()
 }
 
@@ -93,5 +108,52 @@ func init() {
 
 	// Create address for FenixGuiServer to call
 	fenixGuiBuilderServerAddressToDial = common_config.FenixGuiBuilderServerAddress + ":" + strconv.Itoa(common_config.FenixGuiBuilderServerPort)
+
+	// Get Environment variable to tell if the the application should run as a Tray Application or not
+	var runAsTrayApplication = mustGetenv("RunAsTrayApplication")
+
+	switch runAsTrayApplication {
+	case "YES":
+		tempRunAsTrayApplication = true
+
+	case "NO":
+		tempRunAsTrayApplication = false
+
+	default:
+		fmt.Println("Unknown value for 'RunAsTrayApplication': " + runAsTrayApplication + ". Expected one of the following: 'YES', 'NO'")
+		os.Exit(0)
+
+	}
+
+}
+
+// SysTray Application - StartUp
+func onReady() {
+
+	systray.SetIcon(embededfenixIcon)
+	systray.SetTitle("Fenix-GUI REST -> gRPC Proxy")
+	systray.SetTooltip("Fenix-GUI REST -> gRPC Proxy")
+	mQuit := systray.AddMenuItem("Quit", "Quit the Fenix-GUI REST -> gRPC Proxy")
+
+	// Sets the icon of a menu item. Only available on Mac and Windows.
+	mQuit.SetIcon(icon.Data)
+
+	// Run menu handles as go-routine
+	go func() {
+		for {
+			select {
+			case <-mQuit.ClickedCh:
+				systray.Quit()
+				return
+			}
+		}
+	}()
+
+}
+
+// SysTray Application - On exit
+func onExit() {
+	// clean up here, and exit the program
+	os.Exit(0)
 
 }

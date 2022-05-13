@@ -10,8 +10,9 @@ import (
 )
 
 type fenixGuiBuilderProxyServerObjectStruct struct {
-	logger         *logrus.Logger
-	gcpAccessToken *oauth2.Token
+	logger               *logrus.Logger
+	gcpAccessToken       *oauth2.Token
+	runAsTrayApplication bool
 }
 
 // Variable holding everything together
@@ -60,3 +61,6 @@ var (
 
 	fenixGuiBuilderServerGrpcClient fenixGuiTestCaseBuilderServerGrpcApi.FenixTestCaseBuilderServerGrpcServicesClient
 )
+
+// Bad solution but using temp storage before real variable is initiated
+var tempRunAsTrayApplication bool
