@@ -3,7 +3,6 @@ package main
 import (
 	"FenixGuiGrpcProxyServer/common_config"
 	_ "embed"
-	"reflect"
 	"strconv"
 
 	//"flag"
@@ -23,26 +22,33 @@ var embededfenixIcon []byte
 // mustGetEnv is a helper function for getting environment variables.
 // Displays a lethal warning if the environment variable is not set.
 func mustGetenv(environmentVariable string) string {
-	v := os.Getenv(environmentVariable)
-	if v == "" {
+
+	// Verify that Variable exists in Environment Variable Map
+
+	// Create the build variable name
+	var buildInjectedVariableNameAsString string
+	var buildInjectedVariableValue string
+	buildInjectedVariableNameAsString = "BuildVariable" + environmentVariable
+
+	buildInjectedVariableValue, exist := buildVariablesMap[buildInjectedVariableNameAsString]
+	if exist == false {
+		// If the 'Build Injected Variable' is missing then end this misery programs life
+		log.Fatalln("Environment variable " + buildInjectedVariableNameAsString + " doesn't exist in 'buildVariablesMap'")
+	}
+
+	// Extract
+	environmentVariableValue := os.Getenv(environmentVariable)
+	if environmentVariableValue == "" {
 		// No environment variable found so try for build injected variable instead
 
-		// Create the build variable name
-		var buildInjectedVariableNameAsValue reflect.Value
-		buildInjectedVariableNameAsValue = reflect.ValueOf("BuildVariable" + environmentVariable)
-
-		// extract the build variables value
-		var buildInjectedVariablesValueAsValue reflect.Value
-		var buildInjectedVariablesValueAsString string
-		buildInjectedVariablesValueAsValue = reflect.ValueOf(buildInjectedVariableNameAsValue)
-		buildInjectedVariablesValueAsString = buildInjectedVariablesValueAsValue.Interface().(string)
-
 		// If the 'Build Injected Variable' is empty then end this misery programs life
-		if buildInjectedVariablesValueAsString == "" {
+		if buildInjectedVariableValue == "" {
 			log.Fatalf("Warning: %s environment variable not set.\n", environmentVariable)
+		} else {
+			environmentVariableValue = buildInjectedVariableValue
 		}
 	}
-	return v
+	return environmentVariableValue
 }
 
 func main() {
@@ -59,6 +65,8 @@ func main() {
 func init() {
 	//executionLocation := flag.String("startupType", "0", "The application should be started with one of the following: LOCALHOST_NODOCKER, LOCALHOST_DOCKER, GCP")
 	//flag.Parse()
+
+	convertVariablesToMap()
 
 	var err error
 
@@ -171,5 +179,26 @@ func onReady() {
 func onExit() {
 	// clean up here, and exit the program
 	os.Exit(0)
+
+}
+
+// Convert variables that can be injected at build time into Map, to be able to dynamically find value
+func convertVariablesToMap() {
+
+	buildVariablesMap["BuildVariableDB_HOST"] = BuildVariableDB_HOST
+	buildVariablesMap["BuildVariableDB_NAME"] = BuildVariableDB_NAME
+	buildVariablesMap["BuildVariableDB_PASS"] = BuildVariableDB_PASS
+	buildVariablesMap["BuildVariableDB_PORT"] = BuildVariableDB_PORT
+	buildVariablesMap["BuildVariableDB_SCHEMA"] = BuildVariableDB_SCHEMA
+	buildVariablesMap["BuildVariableDB_USER"] = BuildVariableDB_USER
+	buildVariablesMap["BuildVariableExecutionLocation"] = BuildVariableExecutionLocation
+	buildVariablesMap["BuildVariableExecutionLocationFenixGuiServer"] = BuildVariableExecutionLocationFenixGuiServer
+	buildVariablesMap["BuildVariableFenixGuiBuilderProxyServerAddress"] = BuildVariableFenixGuiBuilderProxyServerAddress
+	buildVariablesMap["BuildVariableFenixGuiBuilderProxyServerAdminPort"] = BuildVariableFenixGuiBuilderProxyServerAdminPort
+	buildVariablesMap["BuildVariableFenixGuiBuilderProxyServerPort"] = BuildVariableFenixGuiBuilderProxyServerPort
+	buildVariablesMap["BuildVariableFenixGuiBuilderServerAddress"] = BuildVariableFenixGuiBuilderServerAddress
+	buildVariablesMap["BuildVariableFenixGuiBuilderServerPort"] = BuildVariableFenixGuiBuilderServerPort
+	buildVariablesMap["BuildVariabletemp"] = BuildVariabletemp
+	buildVariablesMap["BuildVariableRunAsTrayApplication"] = BuildVariableRunAsTrayApplication
 
 }

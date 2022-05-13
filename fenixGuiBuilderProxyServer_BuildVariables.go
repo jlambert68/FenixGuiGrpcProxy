@@ -20,3 +20,21 @@ var (
 	BuildVariabletemp                                string
 	BuildVariableRunAsTrayApplication                string
 )
+
+var buildVariablesMap = map[string]string{
+	"BuildVariableDB_HOST":                             "string",
+	"BuildVariableDB_NAME":                             "string",
+	"BuildVariableDB_PASS":                             "string",
+	"BuildVariableDB_PORT":                             "string",
+	"BuildVariableDB_SCHEMA":                           "string",
+	"BuildVariableDB_USER":                             "string",
+	"BuildVariableExecutionLocation":                   "string",
+	"BuildVariableExecutionLocationFenixGuiServer":     "string",
+	"BuildVariableFenixGuiBuilderProxyServerAddress":   "string",
+	"BuildVariableFenixGuiBuilderProxyServerAdminPort": "string",
+	"BuildVariableFenixGuiBuilderProxyServerPort":      "string",
+	"BuildVariableFenixGuiBuilderServerAddress":        "string",
+	"BuildVariableFenixGuiBuilderServerPort":           "string",
+	"BuildVariabletemp":                                "string",
+	"BuildVariableRunAsTrayApplication":                "string",
+}
