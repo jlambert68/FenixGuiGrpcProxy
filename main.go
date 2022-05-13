@@ -16,7 +16,7 @@ import (
 
 // Embedded resources into the binary
 // The icon used
-//go:embed resources/fenix_icon.png
+//go:embed resources/fenix_icon_128x128.png
 var embededfenixIcon []byte
 
 // mustGetEnv is a helper function for getting environment variables.
@@ -56,7 +56,7 @@ func main() {
 
 	// Start up application as SysTray if environment variable says that
 	if tempRunAsTrayApplication == true {
-		systray.Run(onReady, onExit)
+		go systray.Run(onReady, onExit)
 	}
 
 	fenixGuiTestCaseBuilderServerMain()
