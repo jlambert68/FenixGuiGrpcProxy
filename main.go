@@ -3,6 +3,7 @@ package main
 import (
 	"FenixGuiGrpcProxyServer/common_config"
 	_ "embed"
+	"reflect"
 	"strconv"
 
 	//"flag"
@@ -20,11 +21,26 @@ import (
 var embededfenixIcon []byte
 
 // mustGetEnv is a helper function for getting environment variables.
-// Displays a warning if the environment variable is not set.
-func mustGetenv(k string) string {
-	v := os.Getenv(k)
+// Displays a lethal warning if the environment variable is not set.
+func mustGetenv(environmentVariable string) string {
+	v := os.Getenv(environmentVariable)
 	if v == "" {
-		log.Fatalf("Warning: %s environment variable not set.\n", k)
+		// No environment variable found so try for build injected variable instead
+
+		// Create the build variable name
+		var buildInjectedVariableNameAsValue reflect.Value
+		buildInjectedVariableNameAsValue = reflect.ValueOf("BuildVariable" + environmentVariable)
+
+		// extract the build variables value
+		var buildInjectedVariablesValueAsValue reflect.Value
+		var buildInjectedVariablesValueAsString string
+		buildInjectedVariablesValueAsValue = reflect.ValueOf(buildInjectedVariableNameAsValue)
+		buildInjectedVariablesValueAsString = buildInjectedVariablesValueAsValue.Interface().(string)
+
+		// If the 'Build Injected Variable' is empty then end this misery programs life
+		if buildInjectedVariablesValueAsString == "" {
+			log.Fatalf("Warning: %s environment variable not set.\n", environmentVariable)
+		}
 	}
 	return v
 }
