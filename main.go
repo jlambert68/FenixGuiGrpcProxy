@@ -16,7 +16,7 @@ import (
 
 // Embedded resources into the binary
 // The icon used
-//go:embed resources/fenix_icon_128x128.jpg
+//go:embed resources/fenix_icon_32x32_icon.ico
 var embededfenixIcon []byte
 
 // mustGetEnv is a helper function for getting environment variables.
